@@ -23,6 +23,11 @@ RUN set -x \
 	&& tar -xvf tomcat.tar.gz --strip-components=1 \
 	&& rm bin/*.bat \
 	&& rm tomcat.tar.gz*
+	&& rm -rf $CATALINA_HOME/webapps/{docs,examples,manager,host-manager,ROOT/*}
+	&& rm -rf $CATALINA_HOME/logs/*
 
+VOLUME $CATALINA_HOME/work
+VOLUME $CATALINA_HOME/temp
+	
 EXPOSE 8080
 CMD ["catalina.sh", "run"]
