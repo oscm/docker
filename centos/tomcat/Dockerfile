@@ -22,8 +22,8 @@ RUN set -x \
 	&& wget -O tomcat.tar.gz "$TOMCAT_TGZ_URL" \
 	&& tar -xvf tomcat.tar.gz --strip-components=1 \
 	&& rm bin/*.bat \
-	&& rm tomcat.tar.gz*
-	&& rm -rf $CATALINA_HOME/webapps/{docs,examples,manager,host-manager,ROOT/*}
+	&& rm tomcat.tar.gz* \
+	&& rm -rf $CATALINA_HOME/webapps/{docs,examples,manager,host-manager,ROOT/*} \
 	&& rm -rf $CATALINA_HOME/logs/*
 
 VOLUME $CATALINA_HOME/work
