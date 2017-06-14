@@ -12,8 +12,9 @@
 
 	instance=www.netkiller.cn
 	mkdir -p /var/log/tomcat/${instance}
+	docker image rm -f centos:tomcat
 	docker build -t "centos:tomcat" .
-	docker rm www.netkiller.cn -f
+	docker rm ${instance} -f
 	docker run --rm --name ${instance} \
 	-v /var/log/tomcat/${instance}:/srv/tomcat/logs:rw \
 	-v /www/${instance}:/srv/tomcat/webapps/ROOT:ro \
