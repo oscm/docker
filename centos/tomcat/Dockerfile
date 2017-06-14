@@ -24,8 +24,10 @@ RUN set -x \
 	&& rm bin/*.bat \
 	&& rm tomcat.tar.gz* \
 	&& rm -rf $CATALINA_HOME/webapps/{docs,examples,manager,host-manager,ROOT/*} \
-	&& rm -rf $CATALINA_HOME/logs/*
+	&& rm -rf $CATALINA_HOME/logs/* \
 	&& sed -i "16s/3manager.org.apache.juli.AsyncFileHandler, 4host-manager.org.apache.juli.AsyncFileHandler,//" $CATALINA_HOME/conf/logging.properties
+
+ADD setenv.sh $CATALINA_HOME/bin
 
 VOLUME $CATALINA_HOME/work
 VOLUME $CATALINA_HOME/temp
