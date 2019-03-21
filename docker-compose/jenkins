@@ -4,7 +4,7 @@ services:
   jenkins:
     container_name: jenkins-lts
     ports: 
-      - 9001:8080
+      - 8080:8080
       - 50000:50000
     image: jenkins/jenkins:lts 
     volumes:
