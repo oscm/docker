@@ -1,0 +1,39 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: springboot
+  namespace: default
+  labels:
+    app: springboot
+spec:
+  type: NodePort
+  ports:
+  - port: 8888
+    nodePort: 30000 #service对外开放端口
+  selector:
+    app: springboot
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: spring-cloud-config-server
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: springboot
+  template:
+    metadata:
+      labels:
+        app: springboot
+    spec:
+      containers: #docker容器的配置
+      - name: springboot
+        image: netkiller/config:latest
+        #image: 127.0.0.1:5000/netkiller/config:latest # pull镜像的地址 ip:prot/dir/images:tag
+        imagePullPolicy: IfNotPresent #Always #Never
+        ports:
+        - containerPort: 8888 #容器对外开放端口
+      imagePullSecrets:
+        - name: docker-hub
+---
