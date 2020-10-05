@@ -30,10 +30,11 @@ spec:
       containers: #docker容器的配置
       - name: springboot
         #image: 172.17.0.6:5000/netkiller/welcome:latest
-        image: 192.168.64.8:32050/netkiller/welcome:latest
-        #image: 127.0.0.1:5000/netkiller/config:latest # pull镜像的地址 ip:prot/dir/images:tag
-        imagePullPolicy: IfNotPresent #pull镜像时机，
-        #imagePullPolicy: Always #Never
+        #image: 192.168.64.8:32050/netkiller/welcome:latest
+        #image: 127.0.0.1:5000/netkiller/welcome:latest
+        image: 192.168.3.85:5000/netkiller/welcome:latest
+        #imagePullPolicy: IfNotPresent #pull镜像时机，
+        imagePullPolicy: Always #Never
         ports:
         - containerPort: 8080
       #imagePullSecrets:
