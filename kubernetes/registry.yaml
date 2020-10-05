@@ -13,7 +13,7 @@ spec:
   ports:
   - name: registry
     port: 5000
-#    nodePort: 5000
+    nodePort: 32050
     protocol: TCP
 ---
 apiVersion: apps/v1
