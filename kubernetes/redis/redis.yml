@@ -12,7 +12,7 @@ data:
     bind 0.0.0.0
     appendonly yes
     protected-mode no
-    requirepass 123456
+    requirepass passw0rd
 ---
 apiVersion: v1
 kind: Service
@@ -25,12 +25,11 @@ spec:
   ports:
   - name: redis
     port: 6379
-    nodePort: 36379
     targetPort: 6379
+    nodePort: 6379
   selector:
     app: redis
 ---
-## Deployment
 apiVersion: apps/v1
 kind: Deployment
 metadata:
@@ -53,7 +52,7 @@ spec:
         command: 
           - "sh"
           - "-c"
-          - "redis-server /usr/local/etc/redis/redis.conf"
+          - "redis-server /usr/local/etc/redis.conf"
         ports:
         - containerPort: 6379
         resources:
@@ -83,7 +82,7 @@ spec:
         - name: data
           mountPath: /data
         - name: config
-          mountPath:  /usr/local/etc/redis/redis.conf
+          mountPath:  /usr/local/etc/redis.conf
           subPath: redis.conf
       volumes:
       - name: data

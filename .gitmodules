@@ -1,0 +1,3 @@
+[submodule "libexec"]
+	path = libexec
+	url = https://github.com/oscm/shell.git
