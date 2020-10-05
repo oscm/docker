@@ -8,7 +8,7 @@ metadata:
 spec:
   type: NodePort
   ports:
-  - port: 8888
+  - port: 8080
     nodePort: 30000 #service对外开放端口
   selector:
     app: springboot
@@ -29,11 +29,12 @@ spec:
     spec:
       containers: #docker容器的配置
       - name: springboot
-        image: netkiller/config:latest
+        #image: 172.17.0.6:5000/netkiller/welcome:latest
+        image: 192.168.64.8:32050/netkiller/welcome:latest
         #image: 127.0.0.1:5000/netkiller/config:latest # pull镜像的地址 ip:prot/dir/images:tag
-        # imagePullPolicy: IfNotPresent #pull镜像时机，
-        imagePullPolicy: Always #Never
+        imagePullPolicy: IfNotPresent #pull镜像时机，
+        #imagePullPolicy: Always #Never
         ports:
-        - containerPort: 8888 #容器对外开放端口
-      imagePullSecrets:
-        - name: docker-hub
+        - containerPort: 8080
+      #imagePullSecrets:
+      #  - name: docker-hub
