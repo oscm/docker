@@ -30,17 +30,18 @@ data:
     spring.cloud.config.uri=http://config.cluster:8888
     spring.cloud.config.username=config
     spring.cloud.config.password=s3cr3t
-  application.properties: |-
-    spring.application.name=microservice-restful
-    server.port=8080
-    logging.file=/tmp/spring.log
 
-    eureka.client.serviceUrl.defaultZone=http://eureka:s3cr3t@eureka.cluster:8761/eureka/
+    # statefulSetName-{0..N-1}.serviceName.namespace.svc.cluster.local
+    eureka.client.serviceUrl.defaultZone=http://eureka:s3cr3t@eureka-server-0.spring-cloud-eureka-server.default.svc.cluster.local:8761/eureka/,http://eureka:s3cr3t@eureka-server-1.spring-cloud-eureka-server.default.svc.cluster.local:8761/eureka/
     eureka.instance.hostname=eureka.cluster
     eureka.instance.preferIpAddress=true
     eureka.instance.non-secure-port-enabled=false
     eureka.instance.secure-port-enabled=true
     eureka.instance.securePort=${server.port}
+  application.properties: |-
+    spring.application.name=microservice-restful
+    server.port=8080
+    logging.file=/tmp/spring.log
 
     #management.security.enabled=false
     #management.endpoints.enabled-by-default=false

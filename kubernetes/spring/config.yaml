@@ -27,13 +27,6 @@ data:
     spring.application.name=config-server
     spring.profiles.active=native
     server.port=8888
-    # server.ssl.enabled=true
-    # server.ssl.key-store-type=PKCS12
-    # server.ssl.key-store=classpath:localhost.p12
-    # server.ssl.key-store-password=123456
-    # #server.ssl.key-store=classpath:allhost.p12
-    # #server.ssl.key-store-password=passw0rd
-    # server.http2.enabled=true
 
     logging.file=/tmp/spring.log
 
@@ -62,6 +55,7 @@ spec:
         #image: netkiller/config:latest
         #image: 127.0.0.1:5000/netkiller/config:latest
         image: registry.netkiller.cn:5000/netkiller/config:latest
+        # imagePullPolicy: IfNotPresent
         ports:
         - containerPort: 8888
         # resources:
@@ -75,16 +69,18 @@ spec:
           httpGet:
             path: /actuator/health
             port: 8888
-          initialDelaySeconds: 60
-          timeoutSeconds: 5
-          failureThreshold: 12
+          periodSeconds: 5
+          timeoutSeconds: 10
+          successThreshold: 1
+          failureThreshold: 5
         readinessProbe:
           httpGet:
             path: /actuator/health
             port: 8888
-          initialDelaySeconds: 60
-          timeoutSeconds: 5
-          failureThreshold: 12
+          periodSeconds: 5
+          timeoutSeconds: 10
+          successThreshold: 1
+          failureThreshold: 5
         env:
         - name: JAVA_OPTS
           value: -server -Xms128m -Xmx512m
