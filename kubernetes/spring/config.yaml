@@ -24,9 +24,9 @@ metadata:
     app: spring-cloud-config-server
 data:
   application.properties: |-
-    #server.address=localhost
+    spring.application.name=config-server
+    spring.profiles.active=native
     server.port=8888
-
     # server.ssl.enabled=true
     # server.ssl.key-store-type=PKCS12
     # server.ssl.key-store=classpath:localhost.p12
@@ -37,8 +37,6 @@ data:
 
     logging.file=/tmp/spring.log
 
-    spring.application.name=config-server
-    spring.profiles.active=native
     spring.security.user.name=config
     spring.security.user.password=s3cr3t
 
@@ -63,7 +61,7 @@ spec:
       - name: spring-cloud-config-server
         #image: netkiller/config:latest
         #image: 127.0.0.1:5000/netkiller/config:latest
-        image: 192.168.3.85:5000/netkiller/config:latest
+        image: registry.netkiller.cn:5000/netkiller/config:latest
         ports:
         - containerPort: 8888
         # resources:
@@ -73,23 +71,23 @@ spec:
         #   requests:
         #     cpu: 1000m
         #     memory: 1Gi
-        # livenessProbe:
-        #   httpGet:
-        #     path: /
-        #     port: 8888
-        #   initialDelaySeconds: 60
-        #   timeoutSeconds: 5
-        #   failureThreshold: 12
-        # readinessProbe:
-        #   httpGet:
-        #     path: /
-        #     port: 8888
-        #   initialDelaySeconds: 60
-        #   timeoutSeconds: 5
-        #   failureThreshold: 12
+        livenessProbe:
+          httpGet:
+            path: /actuator/health
+            port: 8888
+          initialDelaySeconds: 60
+          timeoutSeconds: 5
+          failureThreshold: 12
+        readinessProbe:
+          httpGet:
+            path: /actuator/health
+            port: 8888
+          initialDelaySeconds: 60
+          timeoutSeconds: 5
+          failureThreshold: 12
         env:
         - name: JAVA_OPTS
-          value: -server -Xms512m -Xmx4096m
+          value: -server -Xms128m -Xmx512m
         #   valueFrom:
         #     resourceFieldRef:
         #       resource: limits.memory
