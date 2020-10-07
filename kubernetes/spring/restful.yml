@@ -1,13 +1,13 @@
 apiVersion: v1
 kind: Service
 metadata:
-  name: spring-cloud-restful
+  name: restful
   namespace: default
   labels:
     app: springboot
 spec:
   selector:
-    app: spring-cloud-restful
+    app: restful
   type: ClusterIP
   ports: 
   - name: http
@@ -19,9 +19,9 @@ spec:
 apiVersion: v1
 kind: ConfigMap
 metadata:
-  name: spring-cloud-restful
+  name: restful
   labels:
-    app: spring-cloud-restful
+    app: restful
 data:
   bootstrap.properties: |-
     spring.cloud.config.name=restful
@@ -32,12 +32,13 @@ data:
     spring.cloud.config.password=s3cr3t
 
     # statefulSetName-{0..N-1}.serviceName.namespace.svc.cluster.local
-    eureka.client.serviceUrl.defaultZone=http://eureka:s3cr3t@eureka-server-0.spring-cloud-eureka-server.default.svc.cluster.local:8761/eureka/,http://eureka:s3cr3t@eureka-server-1.spring-cloud-eureka-server.default.svc.cluster.local:8761/eureka/
-    eureka.instance.hostname=eureka.cluster
-    eureka.instance.preferIpAddress=true
-    eureka.instance.non-secure-port-enabled=false
-    eureka.instance.secure-port-enabled=true
-    eureka.instance.securePort=${server.port}
+    eureka.client.serviceUrl.defaultZone=http://eureka:s3cr3t@eureka-0.eureka:8761/eureka/,http://eureka:s3cr3t@eureka-1.eureka:8761/eureka/
+    # eureka.client.serviceUrl.defaultZone=${EUREKA_SERVER:http://127.0.0.1:8761/eureka/}
+    # eureka.instance.hostname=eureka.cluster
+    # eureka.instance.preferIpAddress=true
+    # eureka.instance.non-secure-port-enabled=false
+    # eureka.instance.secure-port-enabled=true
+    # eureka.instance.securePort=${server.port}
   application.properties: |-
     spring.application.name=microservice-restful
     server.port=8080
@@ -57,16 +58,16 @@ data:
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: spring-cloud-restful
+  name: restful
 spec:
-  replicas: 1
+  replicas: 2
   selector:
     matchLabels:
-      app: spring-cloud-restful
+      app: restful
   template:
     metadata:
       labels:
-        app: spring-cloud-restful
+        app: restful
     spec:
       hostAliases:
       - ip: "10.10.0.2"
@@ -76,10 +77,11 @@ spec:
         hostnames:
         - "eureka.cluster"
       containers: 
-      - name: spring-cloud-restful
+      - name: restful
         #image: netkiller/eureka:latest
         #image: 127.0.0.1:5000/netkiller/eureka:latest
         image: registry.netkiller.cn:5000/netkiller/restful:latest
+        imagePullPolicy: IfNotPresent
         ports:
         - containerPort: 8080
         # resources:
@@ -114,6 +116,8 @@ spec:
         #   value: -server -Xms512m -Xmx4096m -Duser.timezone="Asia/Shanghai" -Djava.security.egd=file:/dev/./urandom
         - name: SPRING_OPTS
           value: --spring.cloud.bootstrap.location=/srv/bootstrap.properties --spring.config.location=/srv/application.properties
+        # - name: EUREKA_SERVER
+          # value: http://eureka:s3cr3t@eureka-0.eureka:8761/eureka/,http://eureka:s3cr3t@eureka-1.eureka:8761/eureka/
         volumeMounts:
         - name: config
           mountPath:  /srv/bootstrap.properties
@@ -128,6 +132,6 @@ spec:
       #   emptyDir: {} 
       - name: config
         configMap:
-          name: spring-cloud-restful
+          name: restful
       imagePullSecrets:
         - name: docker-hub
