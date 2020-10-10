@@ -6,19 +6,19 @@ metadata:
   labels:
     app: springboot
 spec:
-  type: NodePort
+  type: LoadBalancer
   ports:
   - port: 8080
-    nodePort: 30080 #service对外开放端口
+    # nodePort: 30080
   selector:
     app: springboot
 ---
 apiVersion: apps/v1
-kind: Deployment #对象类型
+kind: Deployment
 metadata:
-  name: springboot #名称
+  name: springboot
 spec:
-  replicas: 2 #运行容器的副本数，修改这里可以快速修改分布式节点数量
+  replicas: 2
   selector:
     matchLabels:
       app: springboot
@@ -27,15 +27,15 @@ spec:
       labels:
         app: springboot
     spec:
-      containers: #docker容器的配置
+      containers:
       - name: springboot
-        #image: 172.17.0.6:5000/netkiller/welcome:latest
         image: registry.netkiller.cn:5000/netkiller/welcome:latest
         #image: 127.0.0.1:5000/netkiller/welcome:latest
-        #image: 192.168.3.85:5000/netkiller/welcome:latest
-        #imagePullPolicy: IfNotPresent #pull镜像时机，
-        imagePullPolicy: Always #Never
+        imagePullPolicy: IfNotPresent
+        # imagePullPolicy: Always 
+        # imagePullPolicy: Never
         ports:
         - containerPort: 8080
+          name: http
       #imagePullSecrets:
       #  - name: docker-hub
