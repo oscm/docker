@@ -32,6 +32,28 @@ spec:
   selector:
     app: redis
 ---
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: redis
+spec:
+  capacity:
+    storage: 1Gi
+  accessModes:
+  - ReadWriteOnce
+  persistentVolumeReclaimPolicy: Retain
+  storageClassName: local-volume
+  local:
+    path: /var/lib/redis
+  nodeAffinity:
+    required:
+      nodeSelectorTerms:
+      - matchExpressions:
+        - key: kubernetes.io/hostname
+          operator: In
+          values:
+          - minikube
+---
 kind: PersistentVolumeClaim
 apiVersion: v1
 metadata:
@@ -42,6 +64,7 @@ spec:
       storage: 1Gi
   accessModes:
   - ReadWriteOnce
+  storageClassName: local-volume
   selector:
     matchLabels:
       app: redis
@@ -102,8 +125,10 @@ spec:
           subPath: redis.conf
       volumes:
       - name: data
-        emptyDir: {} 
-      - name: config  
+        # emptyDir: {} 
+        persistentVolumeClaim:
+          claimName: redis
+      - name: config
         configMap:
           name: redis
 
