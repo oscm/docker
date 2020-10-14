@@ -2,7 +2,6 @@ version: '3.8'
 networks:
   monitor:
     driver: bridge
-
 services:
   prometheus:
     image: prom/prometheus:latest
@@ -10,17 +9,17 @@ services:
     hostname: prometheus
     restart: always
     volumes:
-      - ${PWD}/prometheus/prometheus.yml:/etc/prometheus/prometheus.yml
-      - /var/lib/prometheus:/var/lib/prometheus
-      - ${PWD}/prometheus/node-exporter.json:/etc/prometheus/targets/node-exporter.json
+      - ${PWD}/prometheus.yml:/etc/prometheus/prometheus.yml
+      - /var/lib/prometheus:/prometheus
+      - ${PWD}/node-exporter.json:/etc/prometheus/targets/node-exporter.json
     command:
     # args: 
       - '--config.file=/etc/prometheus/prometheus.yml'
       - "--web.console.libraries=/usr/share/prometheus/console_libraries"
       - "--web.console.templates=/usr/share/prometheus/consoles"
-      # - "--storage.local.path=/var/lib/prometheus"
+      # - "--storage.local.path=/prometheus"
       # - "--storage.local.memory-chunks=10000"
-      - '--storage.tsdb.path=/var/lib/prometheus'
+      # - '--storage.tsdb.path=/prometheus'
       # - '--storage.tsdb.retention=15d'
       # - '--log.level=info'
       # - '--web.listen-address=0.0.0.0:9090'
@@ -36,7 +35,6 @@ services:
     image: prom/node-exporter:latest
     container_name: node-exporter
     hostname: node-exporter
-    restart: always
     volumes:
       - /proc:/host/proc:ro
       - /sys:/host/sys:ro
@@ -53,37 +51,18 @@ services:
     depends_on:
       - prometheus
 
-  alertmanager:
-    image: prom/alertmanager:latest
-    container_name: alertmanager
-    hostname: alertmanager
-    restart: always
-    volumes:
-      - ${PWD}/alertmanager/alertmanager.yml:/etc/alertmanager/config.yml
-    ports:
-      - "9093:9093"
-    networks:
-      - monitor
-    depends_on:
-      - prometheus
-
   grafana:
     image: grafana/grafana:latest
     container_name: grafana
     hostname: grafana
     restart: always
     volumes:
-      # - /var/log/grafana:/var/log/grafana
+      - /var/log/grafana:/var/log/grafana
       - /var/lib/grafana:/var/lib/grafana
     environment:
-      # - GF_SERVER_ROOT_URL=https://YOUR.DOMAIN.TEST
-      # - GF_SERVER_DOMAIN=YOUR.DOMAIN.TEST
-      # - GF_USERS_ALLOW_SIGN_UP=false
-      # - GF_SECURITY_ADMIN_USER=SECURE_USERNAME
       - GF_SECURITY_ADMIN_PASSWORD=passw0rd
     ports:
       - "3000:3000"
-      - "25:25"
     networks:
       - monitor
     depends_on:
