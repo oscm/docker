@@ -2,7 +2,7 @@ apiVersion: v1
 kind: ConfigMap
 metadata:
   name: elasticsearch-logging-config
-  namespace: kube-public
+  # namespace: kube-public
   labels:
     app: elasticsearch-logging
 data:
@@ -11,29 +11,18 @@ data:
     elasticsearch hard memlock unlimited
     elasticsearch hard nofile 65536
     elasticsearch soft nofile 65536
-# ---
-# apiVersion: policy/v1beta1
-# kind: PodSecurityPolicy
-# metadata:
-#   name: sysctls
-# spec:
-#   allowedUnsafeSysctls:
-#   - kernel.msg*
-#   - vm.*
-#   forbiddenSysctls:
-#   - kernel.shm_rmid_forced
 ---
 apiVersion: apps/v1
 kind: StatefulSet
 metadata:
   name: elasticsearch-logging
-  namespace: kube-public
+  # namespace: kube-public
   labels:
     app: elasticsearch-logging
-  # annotations:
-  #   security.alpha.kubernetes.io/unsafe-sysctls: vm.swappiness=0
-  #   security.alpha.kubernetes.io/unsafe-sysctls: vm.max_map_count=262144
-  #   security.alpha.kubernetes.io/unsafe-sysctls: vm.overcommit_memory=1
+  annotations:
+    security.kubernetes.io/sysctls: vm.swappiness=0
+    security.kubernetes.io/sysctls: vm.max_map_count=262144
+    security.kubernetes.io/sysctls: vm.overcommit_memory=1
 spec:
   serviceName: elasticsearch-logging
   replicas: 1
@@ -45,29 +34,26 @@ spec:
       labels:
         app: elasticsearch-logging
     spec:
+      # serviceAccountName: elasticsearch-logging
       # securityContext:
         # privileged: true
         # runAsUser: 0
         # fsGroup: 0
-        # sysctls:
-        # - name: vm.max_map_count
-        #   value: "262144"    
-        # - name: vm.swappiness
-        #   value: "0"
-      # serviceAccountName: elasticsearch-logging
-      initContainers:
-      - name: elasticsearch-logging-init
-        image: alpine:latest
-        imagePullPolicy: IfNotPresent
-        command: ["/sbin/sysctl", "-w", "vm.max_map_count=262144"]
-        securityContext:
-          privileged: true
+      # initContainers:
+      # - name: elasticsearch-logging-init
+      #   image: alpine:latest
+      #   imagePullPolicy: IfNotPresent
+      #   command: ["/sbin/sysctl", "-w", "vm.max_map_count=262144"]
+      #   securityContext:
+      #     privileged: true
       # - name: elasticsearch-logging-ulimit
       #   image: alpine:latest
       # #   # image: busybox:latest
       #   imagePullPolicy: IfNotPresent
       # #   command: ["/sbin/ulimit", "-l", "unlimited"]
       #   command: ["/sbin/sysctl", "-w", "vm.swappiness=0"]
+      #   securityContext:
+      #     privileged: true
       containers:
       - name: elasticsearch-logging
         image: docker.elastic.co/elasticsearch/elasticsearch:7.9.2
@@ -101,12 +87,6 @@ spec:
           value: "elasticsearch-logging-0"
         - name: "discovery.find_peers_interval"
           value: "5s"
-
-        - name: "gateway.expected_nodes"
-          value: "2"
-        - name: "gateway.expected_master_nodes"
-          value: "1"
-
         - name: "http.cors.enabled"
           value: "true"
         - name: "http.cors.allow-origin"
@@ -130,11 +110,6 @@ spec:
         #       path: /_cluster/health?local=true
         #       port: 9200
         #     initialDelaySeconds: 5  
-        # livenessProbe:
-        #   tcpSocket:
-        #     port: transport
-        #   initialDelaySeconds: 20
-        #   periodSeconds: 10
         volumeMounts:
         - name: elasticsearch-config
           mountPath: /etc/security/limits.conf
@@ -144,8 +119,6 @@ spec:
       volumes:
       - name: elasticsearch-data
         emptyDir: {}
-        # hostPath:
-          # path: /data
       - name: elasticsearch-config
         configMap:
           name: elasticsearch-logging-config
@@ -154,7 +127,7 @@ apiVersion: v1
 kind: Service
 metadata:
   name: elasticsearch-logging
-  namespace: kube-public
+  # namespace: kube-public
   labels:
     k8s-app: elasticsearch-logging
     kubernetes.io/cluster-service: "true"
