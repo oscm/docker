@@ -53,19 +53,19 @@ services:
     depends_on:
       - prometheus
 
-  alertmanager:
-    image: prom/alertmanager:latest
-    container_name: alertmanager
-    hostname: alertmanager
-    restart: always
-    volumes:
-      - ${PWD}/alertmanager/alertmanager.yml:/etc/alertmanager/config.yml
-    ports:
-      - "9093:9093"
-    networks:
-      - monitor
-    depends_on:
-      - prometheus
+  # alertmanager:
+  #   image: prom/alertmanager:latest
+  #   container_name: alertmanager
+  #   hostname: alertmanager
+  #   restart: always
+  #   volumes:
+  #     - ${PWD}/alertmanager/config.yml:/etc/alertmanager/config.yml
+  #   ports:
+  #     - "9093:9093"
+  #   networks:
+  #     - monitor
+  #   depends_on:
+  #     - prometheus
 
   grafana:
     image: grafana/grafana:latest
