@@ -8,7 +8,9 @@ services:
     image: prom/prometheus:latest
     container_name: prometheus
     hostname: prometheus
-    restart: always
+    # restart: always
+    # restart: unless-stopped
+    working_dir: /var/lib/prometheus/
     volumes:
       - ${PWD}/prometheus/prometheus.yml:/etc/prometheus/prometheus.yml
       - /var/lib/prometheus:/var/lib/prometheus
@@ -20,7 +22,7 @@ services:
       - "--web.console.templates=/usr/share/prometheus/consoles"
       # - "--storage.local.path=/var/lib/prometheus"
       # - "--storage.local.memory-chunks=10000"
-      - '--storage.tsdb.path=/var/lib/prometheus'
+      - '--storage.tsdb.path=/var/lib/prometheus/data'
       # - '--storage.tsdb.retention=15d'
       # - '--log.level=info'
       # - '--web.listen-address=0.0.0.0:9090'
@@ -36,7 +38,7 @@ services:
     image: prom/node-exporter:latest
     container_name: node-exporter
     hostname: node-exporter
-    restart: always
+    # restart: always
     volumes:
       - /proc:/host/proc:ro
       - /sys:/host/sys:ro
@@ -53,27 +55,27 @@ services:
     depends_on:
       - prometheus
 
-  # alertmanager:
-  #   image: prom/alertmanager:latest
-  #   container_name: alertmanager
-  #   hostname: alertmanager
-  #   restart: always
-  #   volumes:
-  #     - ${PWD}/alertmanager/config.yml:/etc/alertmanager/config.yml
-  #   ports:
-  #     - "9093:9093"
-  #   networks:
-  #     - monitor
-  #   depends_on:
-  #     - prometheus
+  alertmanager:
+    image: prom/alertmanager:latest
+    container_name: alertmanager
+    hostname: alertmanager
+    # restart: always
+    volumes:
+      - ${PWD}/alertmanager/config.yml:/etc/alertmanager/config.yml
+    ports:
+      - "9093:9093"
+    networks:
+      - monitor
+    depends_on:
+      - prometheus
 
   grafana:
     image: grafana/grafana:latest
     container_name: grafana
     hostname: grafana
-    restart: always
+    # restart: always
     volumes:
-      # - /var/log/grafana:/var/log/grafana
+      - /var/log/grafana:/var/log/grafana
       - /var/lib/grafana:/var/lib/grafana
     environment:
       # - GF_SERVER_ROOT_URL=https://YOUR.DOMAIN.TEST
