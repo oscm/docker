@@ -15,16 +15,20 @@ services:
       # - ${PWD}/prometheus/prometheus.yml:/etc/prometheus/prometheus.yml
       # - ${PWD}/prometheus/node-exporter.json:/etc/prometheus/targets/node-exporter.json
       - ${PWD}/prometheus:/etc/prometheus
-      - /var/lib/prometheus:/var/lib/prometheus
+      # - /var/lib/prometheus:/var/lib/prometheus
+      - /var/lib/prometheus:/prometheus
+      # - type: bind
+      #   source: $HOST/prometheus
+      #   target: /var/lib/prometheus
     command:
     # args: 
       - '--config.file=/etc/prometheus/prometheus.yml'
       - "--web.console.libraries=/usr/share/prometheus/console_libraries"
       - "--web.console.templates=/usr/share/prometheus/consoles"
-      # - "--storage.local.path=/var/lib/prometheus"
       # - "--storage.local.memory-chunks=10000"
-      - '--storage.tsdb.path=/var/lib/prometheus/data'
-      - '--storage.tsdb.retention=15d'
+      # - '--storage.tsdb.path=/var/lib/prometheus/data'
+      - '--storage.tsdb.path=/prometheus/data'
+      - '--storage.tsdb.retention.time=15d'
       # - '--log.level=info'
       # - '--web.listen-address=0.0.0.0:9090'
       # - '--query.max-concurrency=50'
@@ -64,6 +68,7 @@ services:
     # restart: always
     volumes:
       - ${PWD}/alertmanager/config.yml:/etc/alertmanager/config.yml
+      - /var/lib/alertmanager:/alertmanager
     ports:
       - "9093:9093"
     networks:
