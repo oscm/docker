@@ -12,9 +12,10 @@ services:
     # restart: unless-stopped
     working_dir: /var/lib/prometheus/
     volumes:
-      - ${PWD}/prometheus/prometheus.yml:/etc/prometheus/prometheus.yml
+      # - ${PWD}/prometheus/prometheus.yml:/etc/prometheus/prometheus.yml
+      # - ${PWD}/prometheus/node-exporter.json:/etc/prometheus/targets/node-exporter.json
+      - ${PWD}/prometheus:/etc/prometheus
       - /var/lib/prometheus:/var/lib/prometheus
-      - ${PWD}/prometheus/node-exporter.json:/etc/prometheus/targets/node-exporter.json
     command:
     # args: 
       - '--config.file=/etc/prometheus/prometheus.yml'
@@ -23,7 +24,7 @@ services:
       # - "--storage.local.path=/var/lib/prometheus"
       # - "--storage.local.memory-chunks=10000"
       - '--storage.tsdb.path=/var/lib/prometheus/data'
-      # - '--storage.tsdb.retention=15d'
+      - '--storage.tsdb.retention=15d'
       # - '--log.level=info'
       # - '--web.listen-address=0.0.0.0:9090'
       # - '--query.max-concurrency=50'
@@ -52,6 +53,7 @@ services:
       - '--path.sysfs=/host/sys'
       - --collector.filesystem.ignored-mount-points
       - "^/(sys|proc|dev|host|etc|rootfs/var/lib/docker/containers|rootfs/var/lib/docker/overlay2|rootfs/run/docker/netns|rootfs/var/lib/docker/aufs)($$|/)"
+    # entrypoint: ["echo", "Service foo disabled"]
     depends_on:
       - prometheus
 
